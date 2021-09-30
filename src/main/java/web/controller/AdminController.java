@@ -9,62 +9,57 @@ import web.service.UserService;
 import java.util.List;
 
 @Controller
-public class UsersController {
+@RequestMapping("/admin")
+public class AdminController {
 
     private final UserService userService;
 
-    public UsersController(UserService userService) {
+    public AdminController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
+    // form 'admin_panel'
+    @GetMapping("/crud_user")
     public String GetUsers() {
-        return "users";
+        return "admin/crud_user";
     }
 
-    @GetMapping(value = "/login")
-    public String getLoginPage() {
-        return "login";
-    }
-
-    @GetMapping(value = "/")
-    public String getHomePage() {
-        return "index";
-    }
-
-    @GetMapping("/edituser/{id}")
-    public String EditUsers(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("EditingUser", userService.getUser(id));
-        return "edituser";
-    }
-
-    @PostMapping("/users")
+    // Add new User
+    @PostMapping("/add_user")
     public String AddUser(@ModelAttribute("User") User user) {
-        if((user.getName() != null) || (user.getPassword() != null) || (user.getRoles() != null)) {
+        if ((user.getName() != null) || (user.getPassword() != null) || (user.getRoles() != null)) {
             userService.addUser(user);
         }
-        return "redirect:/users";
+        return "admin/crud_user";
     }
 
-    @PatchMapping("/edituser")
+    // Update User
+    @GetMapping("/upd_user/{id}")
+    public String EditUsers(Model model, @PathVariable("id") Long id) {
+        model.addAttribute("EditingUser", userService.getUser(id));
+        return "admin/upd_user";
+    }
+
+    @PatchMapping("/upd_user")
     public String UpdateUser(@ModelAttribute("EditingUser") User user) {
         userService.updUser(user);
-        return "redirect:/users";
+        return "admin/crud_user";
     }
 
-    @DeleteMapping("/users/{id}")
+    // Delete User
+    @DeleteMapping("/del_user/{id}")
     public String DeleteUser(@PathVariable("id") Long id) {
         userService.delUser(id);
-        return "redirect:/users";
+        return "admin/crud_user";
     }
 
     @ModelAttribute("Users")
-    public  List<User>  ListUsers() {
+    public List<User> ListUsers() {
         return userService.getUsers();
     }
 
     @ModelAttribute("User")
-    public  User  getNewUser() {
+    public User getNewUser() {
         return new User();
     }
 }

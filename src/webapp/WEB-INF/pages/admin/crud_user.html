@@ -19,12 +19,12 @@
             <td th:text="${user.getLastName()}"></td>
             <td th:text="${user.getAge()}"></td>
             <td>
-                <form th:method="GET" th:action="@{/edituser/{id} (id=${user.getId()}) }">
+                <form th:method="GET" th:action="@{/admin/upd_user/{id} (id=${user.getId()}) }">
                     <input type="submit" value="Update" />
                 </form>
             </td>
             <td>
-                <form th:method="DELETE" th:action="@{/users/{id} (id=${user.getId()}) }">
+                <form th:method="DELETE" th:action="@{/admin/del_user/{id} (id=${user.getId()}) }">
                     <input type="submit" value="Delete" />
                 </form>
             </td>
@@ -33,7 +33,7 @@
 
     <p></p>
     ----------Add User----------
-    <form th:method="POST" th:action="@{/users}" th:object="${User}">
+    <form th:method="POST" th:action="@{/admin/add_user}" th:object="${User}">
         <label for="name">Name</label>
         <input type="text" th:field="*{name}" id="name"/>
         <br/>

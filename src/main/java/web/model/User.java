@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,15 +16,13 @@ public class User implements UserDetails {
     private Long id;
     private String name;
     private String password;
-    private Set<Role> roles = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    public Set<Role> getRoles() {
-        return roles;
-    }
+            joinColumns = @JoinColumn(name = "name"),
+            inverseJoinColumns = @JoinColumn(name = "role"))
+    private Set<Role> roles = new HashSet<>();
+
 
     public User() {}
 
@@ -51,13 +48,18 @@ public class User implements UserDetails {
         this.name = name;
     }
 
-    public void setPassword(String lastname) {
-        this.password = lastname;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -96,7 +98,7 @@ public class User implements UserDetails {
 
     @Override
     public String toString() {
-        return "Car{" +
+        return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", pass='" + password + '\'' +
