@@ -1,15 +1,15 @@
 package web.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
+import web.model.Role;
 import web.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import java.util.HashSet;
 import java.util.List;
 
 @Repository
@@ -18,10 +18,12 @@ public class UserDaoImpl implements UserDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void addUser(User user) {
-        entityManager.persist(user);
+        entityManager.merge(user);
     }
 
     @Override
@@ -46,6 +48,25 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User getUserByName(String s) {
-        return entityManager.find(User.class, s);
+        TypedQuery<User> query = entityManager.createQuery("SELECT u from User u WHERE u.name = :name", User.class);
+        query.setParameter("name", s);
+        return query.getSingleResult();
     }
+
+    @Override
+    public Role getRole(String roleName) {
+        TypedQuery<Role> query = entityManager.createQuery("SELECT r from Role r WHERE r.role = :roleName", Role.class);
+        query.setParameter("roleName", roleName);
+        return query.getSingleResult();
+    }
+
+    @Override
+    public void createDataTables() {
+        Role userRole = new Role("ROLE_USER");
+        Role adminRole = new Role("ROLE_ADMIN");
+        entityManager.persist(new User("Tom", passwordEncoder.encode("12345"), new HashSet<Role>(){{add(userRole);}}));
+        entityManager.persist(new User("Mike", passwordEncoder.encode("123"), new HashSet<Role>(){{add(userRole); add(adminRole);}}));
+        entityManager.persist(new User("Ivan", passwordEncoder.encode("000"), new HashSet<Role>(){{add(adminRole);}}));
+    }
+
 }

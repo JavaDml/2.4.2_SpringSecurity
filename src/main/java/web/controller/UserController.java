@@ -1,8 +1,11 @@
 package web.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import web.model.User;
 import web.service.UserService;
 
 @Controller
@@ -16,9 +19,14 @@ public class UserController {
     }
 
     // form 'user_panel'
-    @GetMapping("/users")
+    @GetMapping("/show_my_user")
     public String GetUsers() {
-        return "show_my_user";
+        return "/user/show_my_user";
+    }
+
+    @ModelAttribute("User")
+    public User getUser(@AuthenticationPrincipal User user) {
+        return user;
     }
 
 }

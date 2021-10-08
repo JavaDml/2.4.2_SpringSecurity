@@ -7,15 +7,19 @@
 </head>
 <body>
 
-<form th:method="PATCH" th:action="@{/admin/upd_user}" th:object="${EditingUser}">
+<form th:method="POST" th:action="@{/admin/upd_current_user}" th:object="${EditingUser}">
+
+    <input type="hidden" th:field="*{id}" id="id"/>
+
     <label for="name">Name</label>
     <input type="text" th:field="*{name}" id="name"/>
     <br/>
-    <label for="lastName">LastName</label>
-    <input type="text" th:field="*{lastName}"  id="lastName"/>
+    <label for="password">Password</label>
+    <input type="password" th:field="*{password}"  id="password"/>
+    <input type="hidden" name="oldPassword" th:value="*{password}"/>
     <br/>
-    <label for="age">Age</label>
-    <input type="text" th:field="*{age}"  id="age"/>
+    <input type="checkbox"  th:id="2" name="ROLE_ADMIN" value="ROLE_ADMIN" th:checked="${EditingUser.getRolesToString().contains('ROLE_ADMIN')}">ADMIN</p>
+    <input type="checkbox"  th:id="1"  name="ROLE_USER" value="ROLE_USER" th:checked="${EditingUser.getRolesToString().contains('ROLE_USER')}">USER</p>
     <br/>
     <input type="submit" value="Update User" />
 </form>

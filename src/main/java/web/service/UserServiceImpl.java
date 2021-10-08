@@ -1,17 +1,23 @@
 package web.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.dao.UserDao;
+import web.model.Role;
 import web.model.User;
-
 import java.util.List;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService, UserDetailsService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private final UserDao userDao;
 
@@ -19,40 +25,48 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.userDao = userDao;
     }
 
-    @Transactional
     @Override
     public void delUser(Long id) {
         userDao.delUser(id);
     }
 
-    @Transactional
     @Override
     public User getUser(Long id) {
         return userDao.getUser(id);
     }
 
-    @Transactional
     @Override
-    public void updUser(User user) {
+    public void updUser(User user, boolean encPass) {
+        if(encPass == true) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         userDao.updUser(user);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<User> getUsers() {
         return userDao.getUsers();
     }
 
-    @Transactional
     @Override
     public void addUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.addUser(user);
     }
 
-    @Transactional
+    @Override
+    public Role getRole(String roleName) {
+        return userDao.getRole(roleName);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         return userDao.getUserByName(s);
     }
+
+    public void createDataTables() {
+        userDao.createDataTables();
+    }
+
 
 }

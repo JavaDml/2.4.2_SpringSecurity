@@ -1,7 +1,9 @@
 package web.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -17,10 +19,10 @@ public class User implements UserDetails {
     private String name;
     private String password;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER) //нужно добавить fetch=FetchType.EAGER в свои аннотации ManyToMany, чтобы автоматически извлекать дочерние объекты
     @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "name"),
-            inverseJoinColumns = @JoinColumn(name = "role"))
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
 
@@ -60,6 +62,14 @@ public class User implements UserDetails {
         return roles;
     }
 
+    public String getRolesToString() {
+        String rolesToString = "";
+        for(Role role : roles) {
+            rolesToString = rolesToString + "," + role.getRole();
+        }
+        return rolesToString;
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -96,12 +106,4 @@ public class User implements UserDetails {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", pass='" + password + '\'' +
-                '}';
-    }
 }
